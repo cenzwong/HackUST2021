@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[84]:
+# In[10]:
 
 
 import pandas as pd
@@ -10,65 +10,22 @@ import json
 import datetime
 import time
 
-
-# In[85]:
-
-
 response = requests.get("https://www.lux-airport.lu/wp-content/themes/lux-airport/flightsinfo.php?arrivalsDepartures_action=getArrivalsDepartures&lang=en")
-
-
-# In[86]:
 
 
 # load json object to python object
 airport_dict = json.loads(response.text)
 
 
-# In[87]:
-
-
-airport_dict
-
-
-# In[88]:
-
-
 # load dictionary to DataFrames
 airport_df = pd.DataFrame(airport_dict['departures'])
 
 
-# In[89]:
-
-
-airport_df
-
-
-# In[90]:
-
-
 possible = airport_df[airport_df['remarks']=='Take Off']
-
-
-# In[91]:
-
-
-possible
-
-
-# In[92]:
-
 
 raw_date = possible['scheduledDate']
 raw_time = possible['scheduledTime']
 
-
-# In[ ]:
-
-
-
-
-
-# In[93]:
 
 
 #change date time to unix timestamp
@@ -88,8 +45,6 @@ for i in range(len(list_date)):
     seperated_date_and_time[i][3] -= 2
 
 
-# In[94]:
-
 
 import datetime
 import time
@@ -103,41 +58,22 @@ for i in range(len(seperated_date_and_time)):
     timestamp = element.replace(tzinfo=timezone.utc).timestamp()
     unixtime.append(timestamp)
     
-print(unixtime)
-
-
-# In[95]:
-
 
 possible_with_unix_Timestamp = possible.assign(UnixTimestamp = unixtime)
 
 
-# In[96]:
-
-
-possible_with_unix_Timestamp
-
-
-# In[97]:
-
-
-possible_flight = possible_with_unix_Timestamp[(possible_with_unix_Timestamp['UnixTimestamp'] >= 1617357600.0) & (possible_with_unix_Timestamp['UnixTimestamp'] <= 1617359100.0)]
-
-
-# In[98]:
-
-
-possible_flight
-
-
-# In[ ]:
+time_now = time.time()
+int(time_now)
+Nve_now = time_now - 3600*3
+Pve_now = time_now 
+possible_flight = possible_with_unix_Timestamp[(possible_with_unix_Timestamp['UnixTimestamp'] >= Nve_now) & (possible_with_unix_Timestamp['UnixTimestamp'] <= Pve_now)]
 
 
 
+possible_flightNumber = possible_flight['flightNumber']
+list_possible_flightNumber = list(possible_flightNumber)
 
-
-# In[ ]:
-
+list_possible_flightNumber
 
 
 
